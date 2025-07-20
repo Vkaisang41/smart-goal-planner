@@ -1,36 +1,59 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
 function GoalForm({ onAdd }) {
-  const [formData, setFormData] = useState({
-    name: "",
-    targetAmount: "",
-    category: "",
-    deadline: ""
-  });
-
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+  const [name, setName] = useState("");
+  const [targetAmount, setTargetAmount] = useState("");
+  const [category, setCategory] = useState("");
+  const [deadline, setDeadline] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!name || !targetAmount || !category || !deadline) return;
+
     const newGoal = {
-      ...formData,
-      targetAmount: Number(formData.targetAmount),
+      name,
+      targetAmount: parseFloat(targetAmount),
       savedAmount: 0,
-      createdAt: new Date().toISOString().split("T")[0]
+      category,
+      deadline,
+      createdAt: new Date().toISOString().split("T")[0],
     };
-    onAdd(newGoal);
-    setFormData({ name: "", targetAmount: "", category: "", deadline: "" });
+
+    onAdd(newGoal); //  this matches App.js now
+
+    // reset form
+    setName("");
+    setTargetAmount("");
+    setCategory("");
+    setDeadline("");
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form className="goal-form" onSubmit={handleSubmit}>
       <h2>Add New Goal</h2>
-      <input name="name" placeholder="Goal name" value={formData.name} onChange={handleChange} required />
-      <input name="targetAmount" type="number" placeholder="Target amount" value={formData.targetAmount} onChange={handleChange} required />
-      <input name="category" placeholder="Category" value={formData.category} onChange={handleChange} required />
-      <input name="deadline" type="date" value={formData.deadline} onChange={handleChange} required />
+      <input
+        type="text"
+        placeholder="Goal Name"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+      />
+      <input
+        type="number"
+        placeholder="Target Amount"
+        value={targetAmount}
+        onChange={(e) => setTargetAmount(e.target.value)}
+      />
+      <input
+        type="text"
+        placeholder="Category"
+        value={category}
+        onChange={(e) => setCategory(e.target.value)}
+      />
+      <input
+        type="date"
+        value={deadline}
+        onChange={(e) => setDeadline(e.target.value)}
+      />
       <button type="submit">Add Goal</button>
     </form>
   );

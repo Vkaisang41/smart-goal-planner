@@ -26,7 +26,7 @@ function App() {
       body: JSON.stringify(newGoal),
     })
       .then((res) => res.json())
-      .then((created) => setGoals((prev) => [...prev, created]));
+      .then((created) => setGoals([...goals, created]));
   };
 
   // Update goal
@@ -38,21 +38,20 @@ function App() {
     })
       .then((res) => res.json())
       .then((updated) =>
-        setGoals((prev) => prev.map((g) => (g.id === id ? updated : g)))
+        setGoals(goals.map((g) => (g.id === id ? updated : g)))
       );
   };
 
   // Delete goal
   const handleDeleteGoal = (id) => {
     fetch(`${API_URL}/${id}`, { method: "DELETE" }).then(() =>
-      setGoals((prev) => prev.filter((g) => g.id !== id))
+      setGoals(goals.filter((g) => g.id !== id))
     );
   };
 
-  // Deposit
+  // Deposit to a goal
   const handleDeposit = (id, amount) => {
     const goal = goals.find((g) => g.id === id);
-    if (!goal) return;
     const updatedAmount = goal.savedAmount + amount;
     handleUpdateGoal(id, { savedAmount: updatedAmount });
   };
@@ -61,8 +60,11 @@ function App() {
     <div className="App">
       <h1> Smart Goal Planner</h1>
       <Overview goals={goals} />
-      <GoalForm onAddGoal={handleAddGoal} />
+
+      {/*  Pass onAdd instead of onAddGoal */}
+      <GoalForm onAdd={handleAddGoal} />
       <DepositForm goals={goals} onDeposit={handleDeposit} />
+
       <GoalList
         goals={goals}
         onDelete={handleDeleteGoal}
