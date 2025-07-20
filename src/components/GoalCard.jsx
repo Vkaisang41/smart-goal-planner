@@ -70,7 +70,7 @@ function GoalCard({ goal, onDelete, onUpdate }) {
             value={editData.deadline}
             onChange={handleChange}
           />
-          <button type="submit">💾 Save</button>
+          <button type="submit"> Save</button>
         </form>
       ) : (
         <>
@@ -84,8 +84,8 @@ function GoalCard({ goal, onDelete, onUpdate }) {
           </div>
           <p><strong>Deadline:</strong> {goal.deadline}</p>
           <div className="actions">
-            <button className="edit" onClick={() => setIsEditing(true)}>✏️ Edit</button>
-            <button className="delete" onClick={() => onDelete(goal.id)}>🗑️ Delete</button>
+            <button className="edit" onClick={() => setIsEditing(true)}> Edit</button>
+            <button className="delete" onClick={() => onDelete(goal.id)}> Delete</button>
           </div>
         </>
       )}
