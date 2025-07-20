@@ -1,23 +1,73 @@
-import logo from './logo.svg';
-import './App.css';
+import { useEffect, useState } from "react";
+import GoalList from "./components/GoalList";
+import GoalForm from "./components/GoalForm";
+import DepositForm from "./components/DepositForm";
+import Overview from "./components/Overview";
+import "./App.css";
+
+const API_URL = "http://localhost:3002/goals";
 
 function App() {
+  const [goals, setGoals] = useState([]);
+
+  // Fetch initial goals
+  useEffect(() => {
+    fetch(API_URL)
+      .then((res) => res.json())
+      .then((data) => setGoals(data))
+      .catch((err) => console.error("Fetch error:", err));
+  }, []);
+
+  // Add new goal
+  const handleAddGoal = (newGoal) => {
+    fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(newGoal),
+    })
+      .then((res) => res.json())
+      .then((created) => setGoals((prev) => [...prev, created]));
+  };
+
+  // Update goal
+  const handleUpdateGoal = (id, updates) => {
+    fetch(`${API_URL}/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(updates),
+    })
+      .then((res) => res.json())
+      .then((updated) =>
+        setGoals((prev) => prev.map((g) => (g.id === id ? updated : g)))
+      );
+  };
+
+  // Delete goal
+  const handleDeleteGoal = (id) => {
+    fetch(`${API_URL}/${id}`, { method: "DELETE" }).then(() =>
+      setGoals((prev) => prev.filter((g) => g.id !== id))
+    );
+  };
+
+  // Deposit
+  const handleDeposit = (id, amount) => {
+    const goal = goals.find((g) => g.id === id);
+    if (!goal) return;
+    const updatedAmount = goal.savedAmount + amount;
+    handleUpdateGoal(id, { savedAmount: updatedAmount });
+  };
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1> Smart Goal Planner</h1>
+      <Overview goals={goals} />
+      <GoalForm onAddGoal={handleAddGoal} />
+      <DepositForm goals={goals} onDeposit={handleDeposit} />
+      <GoalList
+        goals={goals}
+        onDelete={handleDeleteGoal}
+        onUpdate={handleUpdateGoal}
+      />
     </div>
   );
 }
